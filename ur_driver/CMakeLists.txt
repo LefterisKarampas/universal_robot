@@ -10,7 +10,7 @@ catkin_python_setup()
 
 
 generate_dynamic_reconfigure_options(
-  cfg/URDriver.cfg
+  #cfg/URDriver.cfg
 )
 
 ###################################
@@ -23,7 +23,7 @@ catkin_package(
 #############
 ## Install ##
 #############
-install(PROGRAMS test_move.py test_io.py
+install(PROGRAMS test_move.py test_io.py 
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -34,6 +34,7 @@ install(PROGRAMS src/ur_driver/driver.py
 install(FILES prog prog_reset
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+
 
 #############
 ## Testing ##

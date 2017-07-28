@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ur_description
+    relative_path: urdf/ur3_table.urdf.xacro
+  SRDF:
+    relative_path: config/ur3_table.srdf
+  CONFIG:
+    author_name: Lefteris Karampas
+    author_email: sdi1400064@di.uoa.gr
+    generated_timestamp: 1501225464

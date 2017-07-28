@@ -465,12 +465,9 @@ class CommanderTCPHandler(SocketServer.BaseRequestHandler):
     def __send_message(self, data):
         """
         Send a message to the robot.
-
         The message is given as a list of integers that will be packed
         as 4 bytes each in network byte order (big endian).
-
         A lock is acquired before sending the message to prevent race conditions.
-
         :param data: list of int, the data to send
         """
         buf = struct.pack("!%ii" % len(data), *data)

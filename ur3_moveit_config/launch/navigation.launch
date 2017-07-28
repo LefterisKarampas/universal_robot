@@ -1,0 +1,22 @@
+ 
+<launch>
+  <!-- See moveit_ros/visualization/doc/joystick.rst for documentation -->
+
+  <include file="$(find ur_gazebo)/launch/ur3.launch">
+    <arg name="limited" default="true"/>
+  </include>
+
+   <include file="$(find ur3_moveit_config)/launch/ur3_moveit_planning_execution.launch">
+    <arg name="limited" default="true"/>
+    <arg name="sim" default="true"/>
+  </include>
+
+  <include file="$(find ur3_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" default="true"/>
+  </include>
+  
+  <include file="$(find ur3_moveit_config)/launch/joystick_control.launch"/>
+
+  <node pkg="ur3_moveit_config" type="joy_test_xbox.py" output="screen" name="joy_controller"/>
+        
+</launch>

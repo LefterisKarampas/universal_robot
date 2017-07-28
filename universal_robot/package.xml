@@ -28,6 +28,7 @@
   <run_depend>ur_gazebo</run_depend>
   <run_depend>ur_kinematics</run_depend>
   <run_depend>ur_msgs</run_depend>
+  <run_depend>ur_teleop</run_depend>
 
   <export>
     <metapackage/>
