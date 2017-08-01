@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     group.setMaxAccelerationScalingFactor(0.1);
     group.setPlanningTime(10.0);
     group.setNumPlanningAttempts(100);
-    group.setPlannerId("RRTkConfigDefault");
+    group.setPlannerId("RRTConnectkConfigDefault");
     group.setPoseReferenceFrame("world");
 	group.setGoalTolerance(0.1);
 
