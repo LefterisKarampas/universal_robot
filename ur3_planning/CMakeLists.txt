@@ -69,6 +69,8 @@ target_link_libraries(CartesianPath ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(pick src/pick.cpp)
 target_link_libraries(pick ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(stomp_move_goal src/stomp_move_goal.cpp)
+target_link_libraries(stomp_move_goal ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(place src/place.cpp)
 target_link_libraries(place ${Boost_LIBRARIES} ${catkin_LIBRARIES})

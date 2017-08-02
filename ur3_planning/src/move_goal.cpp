@@ -8,6 +8,7 @@
 #include <moveit_msgs/DisplayRobotState.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 #include <moveit_msgs/Constraints.h>
+#include <moveit/robot_model_loader/robot_model_loader.h>
 
 
 using namespace std;
@@ -30,9 +31,14 @@ int main(int argc, char **argv) {
     group.setNumPlanningAttempts(100);
     group.setPlannerId("RRTConnectkConfigDefault");
     group.setPoseReferenceFrame("world");
-	group.setGoalTolerance(0.1);
+	group.setGoalTolerance(0.01);
 
     group.setStartStateToCurrentState();
+
+    robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
+    robot_state::RobotState start_state(*group.getCurrentState());
+    robot_model::RobotModelPtr robot_model_ptr = robot_model_loader.getModel();
+    const robot_state::JointModelGroup* joint_model_group = robot_model_ptr->getJointModelGroup("manipulator");
 
     ROS_INFO("End effector reference frame: %s", group.getEndEffectorLink().c_str());
     geometry_msgs::PoseStamped target_pose;
@@ -42,9 +48,20 @@ int main(int argc, char **argv) {
     target_pose.pose.position.x = atof(argv[1]);
     target_pose.pose.position.y = atof(argv[2]);
     target_pose.pose.position.z = atof(argv[3]);
-    target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI,0.0,0.0); //horizontal
-    //target_pose.pose.orientation.x = 0.5;
-    
+    //target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI,0.0,0.0); //horizontal
+    target_pose.pose.orientation.w = 1.0;
+    geometry_msgs::Pose target_pose1;
+    target_pose1.position.x = target_pose.pose.position.x;
+    target_pose1.position.y = target_pose.pose.position.y;
+    target_pose1.position.z = target_pose.pose.position.z;
+    target_pose1.orientation.w = 1.0;
+    std::cout << "BEFORE:" << target_pose1.position.x << std::endl;
+    bool found_ik = start_state.setFromIK(joint_model_group, target_pose1);
+    if(!found_ik){
+        ROS_ERROR("Invalid end point!");
+        return 2;
+    }
+    std::cout << "AFTER!\n";
     moveit_msgs::Constraints constraint;
     //constraint 
 
@@ -58,7 +75,7 @@ int main(int argc, char **argv) {
         std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
         std::cout << "Continue? y/n: ";
         std::cin >> q;
-        std::cout << endl;
+        std::cout << std::endl;
         if(q == 'y'){
            ROS_INFO("Moving...");
             //group.stop();
