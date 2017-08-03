@@ -1,5 +1,5 @@
 # num_iterations: 1
-# num_timesteps: 50
+# num_timesteps: 100
 # num_dimensions: 6
 # matrix_rows: 6
-# matrix_cols: 50
+# matrix_cols: 100

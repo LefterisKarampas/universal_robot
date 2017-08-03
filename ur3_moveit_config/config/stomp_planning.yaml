@@ -9,24 +9,20 @@
 #Noise_coefficients: These coefficients are used to randomize the value of the joints during the generation of noisy candidate trajectories that are fed into the 
 #optimization task. The most influential parameters are “stddev” and “decay”. Each entry in these arrays corresponds to an active joint in the planning group. 
 #Setting these to higher values will allow a joint to move more rapidly, however values that are too large may generate trajectories with unnecessary large motions.
-
-# Optimization Task
-num_feature_basis_functions: 50
-trajectory_duration: 8.0
-num_time_steps: 40 #20
-publish_trajectory_markers: False
-publish_best_trajectory_marker: True
-
 #STOMP
 stomp/manipulator:
   group_name: manipulator
   optimization:
-    num_timesteps: 50
-    num_iterations: 50
-    num_iterations_after_valid: 0    
+    num_timesteps: 100
+    num_iterations: 500
+    num_iterations_after_valid: 0
+    trajectory_duration: 8.0    
+    publish_trajectory_markers: False
+    publish_best_trajectory_marker: True
     num_rollouts: 10
+    num_feature_basis_functions: 50
     max_rollouts: 100
-    num_rollouts_per_iteration: 20
+    num_rollouts_per_iteration: 50
     initialization_method: 1 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST
     control_cost_weight: 0.0
   task:
@@ -40,11 +36,11 @@ stomp/manipulator:
         collision_penalty: 1.0
         cost_weight: 1.0
         kernel_window_percentage: 0.2
-        longest_valid_joint_move: 0.05 
+        longest_valid_joint_move: 0.01 
       - class: stomp_moveit/ObstacleDistanceGradient
         max_distance: 0.2
         cost_weight: 1.0
-        longest_valid_joint_move: 0.05
+        longest_valid_joint_move: 0.01
     features:
       - class: stomp_moveit/ObstacleAvoidanceFeature
         collision_clearance: 0.02 

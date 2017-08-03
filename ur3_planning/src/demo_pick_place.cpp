@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
     ros::NodeHandle nodeHandle;
 
     moveit::planning_interface::MoveGroup group("manipulator");
-    group.setMaxVelocityScalingFactor(1.0);
-    group.setMaxAccelerationScalingFactor(1.0);
+    group.setMaxVelocityScalingFactor(0.1);
+    group.setMaxAccelerationScalingFactor(0.1);
     group.setPlanningTime(10.0);
     group.setNumPlanningAttempts(100);
     group.setPlannerId("RRTConnectkConfigDefault");
