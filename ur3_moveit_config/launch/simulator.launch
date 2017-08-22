@@ -1,16 +1,17 @@
 <launch>
 
   <include file="$(find ur_gazebo)/launch/ur3.launch">
-    <arg name="limited" default="true"/>
+    <arg name="limited" default="false"/>
   </include>
 
    <include file="$(find ur3_moveit_config)/launch/ur3_moveit_planning_execution.launch">
-    <arg name="limited" default="true"/>
+    <arg name="limited" default="false"/>
     <arg name="sim" default="true"/>
   </include>
 
   <include file="$(find ur3_moveit_config)/launch/moveit_rviz.launch">
     <arg name="config" default="true"/>
+    <arg name="limited" default="false"/>
   </include>
 
   <node pkg="lkar_testing" type="create_floor" name="create_floor"/>

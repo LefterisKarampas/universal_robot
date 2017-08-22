@@ -75,12 +75,17 @@ target_link_libraries(stomp_move_goal ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(place src/place.cpp)
 target_link_libraries(place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(stop src/stop_move.cpp)
+target_link_libraries(stop ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+
 add_executable(demo_pick_place src/demo_pick_place.cpp)
 target_link_libraries(demo_pick_place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(NewCartesianPath src/NewCartesianPath.cpp)
 target_link_libraries(NewCartesianPath ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(pick_and_place src/pick_and_place.cpp)
+target_link_libraries(pick_and_place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo ${Boost_LIBRARIES} ${catkin_LIBRARIES})
