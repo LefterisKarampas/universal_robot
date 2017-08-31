@@ -5,7 +5,7 @@
 <xacro:include filename="$(find schunk_pg70)/urdf/robot.urdf.xacro" />
 
 <!-- arm -->
-<xacro:schunk_pg70 name="pg70" parent="tool0" has_podest="true">
+<xacro:schunk_pg70 name="pg70" parent="tool0" has_podest="false">
     <origin xyz="0 ${wrist_3_length} 0" rpy="0 0 0"/>
 </xacro:schunk_pg70>
 

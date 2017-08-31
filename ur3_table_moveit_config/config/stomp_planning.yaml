@@ -1,0 +1,69 @@
+#Num_time_steps: It’s the number of joint configurations per trajectory. The larger this number, the smoother the trajectory tends to be, however there will 
+#be more computations required to generate such trajectory.
+
+#Max_iterations: The maximum allowed number of iterations STOMP can perform before finding a collision free trajectory, then it will fail.
+
+#Num_rollouts_per_iteration: The number of noisy candidate trajectories are generated every iteration in order to find a better trajectory. More computations will
+#be required when this number is set to a higher value.
+
+#Noise_coefficients: These coefficients are used to randomize the value of the joints during the generation of noisy candidate trajectories that are fed into the 
+#optimization task. The most influential parameters are “stddev” and “decay”. Each entry in these arrays corresponds to an active joint in the planning group. 
+#Setting these to higher values will allow a joint to move more rapidly, however values that are too large may generate trajectories with unnecessary large motions.
+#STOMP
+stomp/manipulator:
+  group_name: manipulator
+  optimization:
+    num_timesteps: 100
+    num_iterations: 500
+    num_iterations_after_valid: 0
+    trajectory_duration: 8.0    
+    publish_trajectory_markers: False
+    publish_best_trajectory_marker: True
+    num_rollouts: 10
+    num_feature_basis_functions: 50
+    max_rollouts: 100
+    num_rollouts_per_iteration: 50
+    initialization_method: 1 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST
+    control_cost_weight: 0.0
+  task:
+    noise_generator:
+      - class: stomp_moveit/NormalDistributionSampling
+        stddev: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        min_stddev: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
+        decay:  [0.999, 0.999, 0.999, 0.999, 0.999, 0.999, 0.999]
+    cost_functions:
+      - class: stomp_moveit/CollisionCheck
+        collision_penalty: 1.0
+        cost_weight: 1.0
+        kernel_window_percentage: 0.2
+        longest_valid_joint_move: 0.01 
+      - class: stomp_moveit/ObstacleDistanceGradient
+        max_distance: 0.2
+        cost_weight: 1.0
+        longest_valid_joint_move: 0.01
+    features:
+      - class: stomp_moveit/ObstacleAvoidanceFeature
+        collision_clearance: 0.02 
+    noisy_filters:
+      - class: stomp_moveit/JointLimits
+        lock_start: True
+        lock_goal: True
+      - class: stomp_moveit/MultiTrajectoryVisualization
+        line_width: 0.02
+        rgb: [0, 255, 0]
+        marker_array_topic: stomp_trajectories
+        marker_namespace: noisy
+    update_filters:
+      - class: stomp_moveit/PolynomialSmoother
+        poly_order: 5
+      - class: stomp_moveit/TrajectoryVisualization
+        line_width: 0.02
+        rgb: [191, 0, 255]
+        error_rgb: [255, 0, 0]
+        publish_intermediate: True
+        marker_topic: stomp_trajectory
+        marker_namespace: optimized
+      - class: stomp_moveit/UpdateLogger
+        package: ur3_planning
+        directory: log
+        filename: smoothed_update.txt

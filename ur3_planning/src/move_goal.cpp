@@ -80,7 +80,15 @@ int main(int argc, char **argv) {
         ROS_ERROR("Invalid end point!");
         return 2;
     }
+    
     moveit_msgs::Constraints constraint;
+    /*moveit_msgs::JointConstraint joint_constraints;
+    joint_constraints.joint_name = "elbow_joint";
+    joint_constraints.position = 1.2;
+    joint_constraints.tolerance_above = 1.5;
+    joint_constraints.tolerance_below = 1.5;
+    joint_constraints.weight = 1.0;
+    constraint.joint_constraints.push_back(joint_constraints);*/
     //constraint 
     
     //bool state_feasible = planning_scene.isStateFeasible(start_state);
