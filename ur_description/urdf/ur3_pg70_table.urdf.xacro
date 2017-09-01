@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro"
-       name="ur3_pg70" >
+       name="ur3_pg70_table" >
 
   <!-- common stuff -->
   <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />
@@ -13,14 +13,31 @@
 
   <!-- arm -->
   <xacro:ur3_robot prefix="" joint_limited="false"/>
-  
+
   <link name="world" />
 
+<!-- box-->
+  <link name="box_link">
+    <visual>
+      <geometry>
+        <box size="1.0 1.0 0.86"/>
+      </geometry>
+    </visual>
+  </link>
+
+<!-- attach the box to the world-->
   <joint name="world_joint" type="fixed">
     <parent link="world" />
-    <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <child link = "box_link" />
+    <origin xyz="0.0 0.0 0.43" rpy="0.0 0.0 0.0" />
   </joint>
+
+<!-- attach the robot to the box -->
+ <joint name="box_joint" type="fixed">
+    <parent link="box_link"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.43" rpy="0 0 1.57" />
+ </joint>
 
  <link name="gripper_link">
     <visual>

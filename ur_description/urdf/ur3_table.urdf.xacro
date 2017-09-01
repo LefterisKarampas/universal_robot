@@ -5,7 +5,7 @@
   <!-- common stuff -->
   <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />
 
-  <!-- ur5 -->
+  <!-- ur3 -->
   <xacro:include filename="$(find ur_description)/urdf/ur3.urdf.xacro" />
 
   <!-- arm -->
@@ -36,12 +36,4 @@
     <origin xyz="0.0 0.0 0.43" rpy="0 0 1.57" />
  </joint>
 
-  <!-- GRIPPER -->
-  <!-- Import robotiq gazebo and gripper description -->
-  <!--xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
-
-  <xacro:robotiq_85_gripper prefix="" parent="ee_link" >
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-    </xacro:robotiq_85_gripper-->
-  
 </robot>
