@@ -1,5 +1,5 @@
 controller_list:
-  - name: arm/joint_trajectory_controller
+  - name: ""
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     joints:
@@ -9,9 +9,8 @@ controller_list:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-  - name: arm/joint_trajectory_controller_gripper
+  - name: gripper
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
-    default: true
     joints:
       - gripper_left_joint

@@ -9,7 +9,7 @@
   <xacro:include filename="$(find ur_description)/urdf/ur3.urdf.xacro" />
 
   <!-- schunk pg70 -->
-  <xacro:include filename="$(find schunk_pg70)/urdf/pg70.urdf.xacro" />
+  <xacro:include filename="$(find schunkPG70_description)/robots/schunkPG70_description.URDF" />
 
   <!-- arm -->
   <xacro:ur3_robot prefix="" joint_limited="false"/>
@@ -27,46 +27,42 @@
       <geometry>
         <box size="0.08 0.113 0.005"/>
       </geometry>
+      <material name="o">
+      	 <color rgba="0.549019608 0.450980392 0.235294118 1" />
+      </material>
     </visual>
   </link>
 
   <joint name="gripper_joint" type="fixed">
     <parent link="ee_link"/>
     <child link="gripper_link"/>
-    <origin xyz="0.0 0.0 0.0" rpy="${pi} -${pi/2} 0.0" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 ${pi/2} 0.0" />
  </joint>
 
   <!-- GRIPPER -->
-  <xacro:schunk_pg70 name="pg70" parent="gripper_link">
-    <origin xyz="0 0.0 0.01" rpy="0 0 0" /> <!--slightly above gazebo plane-->
-  </xacro:schunk_pg70>
-
-  <link name="gripper_power_box">
-    <visual>
-      <geometry>
-        <box size="0.047 0.068 0.07"/>
-      </geometry>
-    </visual>
-  </link>
-
-  <joint name="gripper_power_joint" type="fixed">
-    <parent link="pg70_base_link"/>
-    <child link="gripper_power_box"/>
-    <origin xyz="0.004 -0.08 0.029" rpy="0.0 0.0 ${pi/2}" />
+  <joint name="tool_joint" type="fixed">
+    <parent link="gripper_link"/>
+    <child link="tool_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="${pi} -${pi/2} 0.0" />
  </joint>
+
 
  <link name="gripper_power_cable">
     <visual>
       <geometry>
-        <cylinder length="0.025" radius="0.0075"/>
+        <cylinder length="0.03" radius="0.0075"/>
       </geometry>
+      <material name="o">
+      	 <color rgba="0.549019608 0.450980392 0.235294118 1" />
+      </material>
     </visual>
-  </link>
+ </link>
 
-  <joint name="gripper_power_cable_joint" type="fixed">
-    <parent link="gripper_power_box"/>
+ <joint name="gripper_power_cable_joint" type="fixed">
+    <parent link="tool_link"/>
     <child link="gripper_power_cable"/>
-    <origin xyz="0.0 0.0 -0.05" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 -0.082 0.0" rpy="0.0 ${pi/2} 0.0" />
  </joint>
+
   
 </robot>
