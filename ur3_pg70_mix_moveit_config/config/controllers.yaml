@@ -9,8 +9,8 @@ controller_list:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-  - name: "gripper_controller"
-    action_ns: follow_joint_trajectory
-    type: FollowJointTrajectory
-    joints:
-      - gripper_left_joint
+  #- name: "gripper_controller"
+  #  action_ns: follow_joint_trajectory
+  #  type: FollowJointTrajectory
+  #  joints:
+  #    - pg70_finger_left_joint

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro"
-       name="ur3_pg70" >
+       name="ur3" >
 
   <!-- common stuff -->
   <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />
@@ -8,12 +8,10 @@
   <!-- ur3 -->
   <xacro:include filename="$(find ur_description)/urdf/ur3.urdf.xacro" />
 
-  <!-- schunk pg70 -->
   <xacro:include filename="$(find schunkPG70_description)/robots/schunkPG70_description.URDF" />
-
   <!-- arm -->
   <xacro:ur3_robot prefix="" joint_limited="false"/>
-  
+
   <link name="world" />
 
   <joint name="world_joint" type="fixed">
@@ -21,6 +19,8 @@
     <child link = "base_link" />
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </joint>
+
+
 
  <link name="gripper_link">
     <visual>
@@ -31,6 +31,10 @@
       	 <color rgba="0.549019608 0.450980392 0.235294118 1" />
       </material>
     </visual>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx ="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
   </link>
 
   <joint name="gripper_joint" type="fixed">
