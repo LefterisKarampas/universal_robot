@@ -9,29 +9,30 @@ import message_filters
 import random
 
 
-joint_names = ['gripper_left_joint']
+joint_names = ['pg70_finger_right_joint','pg70_finger_left_joint']
 
-move = [[0.3]]
+c = [0.01,0.01]
+o = [0.03,0.03]
 
-
-def up():
-	rospy.init_node('demo_controller')
-	cmd_publisher = rospy.Publisher('/gripper_controller/command', JointTrajectory, queue_size=10)
+def up(move):
 	cmd = JointTrajectory()
 	cmd.header.stamp = rospy.Time.now()
 	cmd.joint_names = joint_names
-	time.sleep(2)
-	for i in range(len(move)):
-		points = []
-		positions = move[i]
-		point = JointTrajectoryPoint()
-		point.positions = positions
-		point.time_from_start.secs = 0.0
-		point.time_from_start.nsecs = 157114594
-		points.append(point)
-		cmd.points = points
-		cmd_publisher.publish(cmd)
+	points = []
+	positions = move
+	point = JointTrajectoryPoint()
+	point.positions = positions
+	point.time_from_start.secs = 0.0
+	point.time_from_start.nsecs = 157114594
+	points.append(point)
+	cmd.points = points
 	print 'Sent message!'
+	return cmd
 
 if __name__ == '__main__':
-	up()
+	rospy.init_node('demo_controller')
+	cmd_publisher = rospy.Publisher('/gripper_controller/command', JointTrajectory, queue_size=10)
+	time.sleep(2)
+	cmd_publisher.publish(up(c))
+	time.sleep(10)
+	cmd_publisher.publish(up(o))

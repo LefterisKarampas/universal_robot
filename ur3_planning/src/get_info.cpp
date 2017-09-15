@@ -24,7 +24,7 @@ int main(int argc,char **argv){
 	ROS_INFO_NAMED("tutorial", "End effector link: %s", move_group.getEndEffectorLink().c_str());
 	//moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
 	//ROS_INFO_NAMED("tutorial","Positions: %s",current_state->printStatePositions());
-	std::vector<std::string> myvector = move_group.getJointNames();
+	/*std::vector<std::string> myvector = move_group.getJointNames();
 	std::cout << "Active Joints Name:" << std::endl;
 	for(int i=0;i<myvector.size();i++){
 		std::cout << myvector[i] << std::endl;
@@ -51,7 +51,7 @@ int main(int argc,char **argv){
         move_group.execute(my_plan);
     } 
     sleep(5);
-    /*geometry_msgs::PoseStamped pos = move_group.getCurrentPose();
+    geometry_msgs::PoseStamped pos = move_group.getCurrentPose();
     std::cout << "X: " << pos.pose.position.x << std::endl;
     std::cout << "Y: " << pos.pose.position.y << std::endl;
     std::cout << "Z: " << pos.pose.position.z << std::endl;
@@ -63,17 +63,16 @@ int main(int argc,char **argv){
         ROS_INFO("Moving...");
         move_group.execute(my_plan);
     }
-    sleep(5); */
+    sleep(5); 
     moveit_msgs::Constraints ocm;
     for(int i =0;i<ocm.joint_constraints.size();i++){
     	std::cout << ocm.joint_constraints[i].joint_name << std::endl;
-    }
+    }*/
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
     std::vector<std::string> object = planning_scene_interface.getKnownObjectNames();
     for(int i =0;i<object.size();i++){
     	std::cout << object[i] << std::endl;
     }
-	std::cout << "EXIT!" <<std::endl;
 	return 0;
 
 }

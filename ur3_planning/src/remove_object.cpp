@@ -19,24 +19,22 @@ int main(int argc, char **argv) {
 	}
 
 	moveit_msgs::CollisionObject remove_object;
-	char temp[10];
-	sprintf(temp,"box%s",argv[1]);
-	if(argc <2){
-		temp[0] = '\0';
+	int i;
+	for(i=1;i<argc;i++){
+		remove_object.id = argv[i];
+		remove_object.header.frame_id = "base_link";
+		remove_object.operation = remove_object.REMOVE;
+
+		ROS_INFO("Removing the object from the world.");
+		moveit_msgs::PlanningScene planning_scene;
+		planning_scene.is_diff = true;
+	  	planning_scene_diff_publisher.publish(planning_scene);
+		planning_scene.robot_state.attached_collision_objects.clear();
+		planning_scene.world.collision_objects.clear();
+		planning_scene.world.collision_objects.push_back(remove_object);
+		planning_scene_diff_publisher.publish(planning_scene);
+		sleep(2);
 	}
-	remove_object.id = temp;
-	remove_object.header.frame_id = "base_link";
-	remove_object.operation = remove_object.REMOVE;
-
-	ROS_INFO("Removing the object from the world.");
-	moveit_msgs::PlanningScene planning_scene;
-	planning_scene.is_diff = true;
-  	planning_scene_diff_publisher.publish(planning_scene);
-	planning_scene.robot_state.attached_collision_objects.clear();
-	planning_scene.world.collision_objects.clear();
-	planning_scene.world.collision_objects.push_back(remove_object);
-	planning_scene_diff_publisher.publish(planning_scene);
-
 	return 0;
 
 }

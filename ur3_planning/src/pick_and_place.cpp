@@ -11,42 +11,26 @@ static const std::string ROBOT_DESCRIPTION = "robot_description";
 
 void openGripper(trajectory_msgs::JointTrajectory &posture)
 {
-  posture.joint_names.resize(6);
-  posture.joint_names[0] = "r_gripper_joint";
-  posture.joint_names[1] = "r_gripper_motor_screw_joint";
-  posture.joint_names[2] = "r_gripper_l_finger_joint";
-  posture.joint_names[3] = "r_gripper_r_finger_joint";
-  posture.joint_names[4] = "r_gripper_r_finger_tip_joint";
-  posture.joint_names[5] = "r_gripper_l_finger_tip_joint";
-
+  posture.joint_names.resize(2);
+  posture.joint_names[0] = "pg70_finger_right_joint";
+  posture.joint_names[1] = "pg70_finger_right_joint";
+  
   posture.points.resize(1);
-  posture.points[0].positions.resize(6);
-  posture.points[0].positions[0] = 1;
-  posture.points[0].positions[1] = 1.0;
-  posture.points[0].positions[2] = 0.477;
-  posture.points[0].positions[3] = 0.477;
-  posture.points[0].positions[4] = 0.477;
-  posture.points[0].positions[5] = 0.477;
+  posture.points[0].positions.resize(2);
+  posture.points[0].positions[0] = 0.035;
+  posture.points[0].positions[1] = 0.035;
 }
 
 void closedGripper(trajectory_msgs::JointTrajectory &posture)
 {
-  posture.joint_names.resize(6);
-  posture.joint_names[0] = "r_gripper_joint";
-  posture.joint_names[1] = "r_gripper_motor_screw_joint";
-  posture.joint_names[2] = "r_gripper_l_finger_joint";
-  posture.joint_names[3] = "r_gripper_r_finger_joint";
-  posture.joint_names[4] = "r_gripper_r_finger_tip_joint";
-  posture.joint_names[5] = "r_gripper_l_finger_tip_joint";
-
+ posture.joint_names.resize(2);
+  posture.joint_names[0] = "pg70_finger_right_joint";
+  posture.joint_names[1] = "pg70_finger_right_joint";
+  
   posture.points.resize(1);
-  posture.points[0].positions.resize(6);
-  posture.points[0].positions[0] = 0;
-  posture.points[0].positions[1] = 0;
-  posture.points[0].positions[2] = 0.002;
-  posture.points[0].positions[3] = 0.002;
-  posture.points[0].positions[4] = 0.002;
-  posture.points[0].positions[5] = 0.002;
+  posture.points[0].positions.resize(2);
+  posture.points[0].positions[0] = 0.01;
+  posture.points[0].positions[1] = 0.01;
 }
 
 void pick(moveit::planning_interface::MoveGroupInterface &group)
@@ -54,7 +38,7 @@ void pick(moveit::planning_interface::MoveGroupInterface &group)
   std::vector<moveit_msgs::Grasp> grasps;
 
   geometry_msgs::PoseStamped p;
-  p.header.frame_id = "base_footprint";
+  p.header.frame_id = "world";
   p.pose.position.x = 0.34;
   p.pose.position.y = -0.7;
   p.pose.position.z = 0.5;
@@ -66,11 +50,11 @@ void pick(moveit::planning_interface::MoveGroupInterface &group)
   g.grasp_pose = p;
 
   g.pre_grasp_approach.direction.vector.x = 1.0;
-  g.pre_grasp_approach.direction.header.frame_id = "r_wrist_roll_link";
+  g.pre_grasp_approach.direction.header.frame_id = "ee_link";
   g.pre_grasp_approach.min_distance = 0.2;
   g.pre_grasp_approach.desired_distance = 0.4;
 
-  g.post_grasp_retreat.direction.header.frame_id = "base_footprint";
+  g.post_grasp_retreat.direction.header.frame_id = "world";
   g.post_grasp_retreat.direction.vector.z = 1.0;
   g.post_grasp_retreat.min_distance = 0.1;
   g.post_grasp_retreat.desired_distance = 0.25;
@@ -81,7 +65,7 @@ void pick(moveit::planning_interface::MoveGroupInterface &group)
 
   grasps.push_back(g);
   group.setSupportSurfaceName("table");
-  group.pick("part", grasps);
+  group.pick("object1", grasps);
 }
 
 void place(moveit::planning_interface::MoveGroupInterface &group)
@@ -89,7 +73,7 @@ void place(moveit::planning_interface::MoveGroupInterface &group)
   std::vector<moveit_msgs::PlaceLocation> loc;
 
   geometry_msgs::PoseStamped p;
-  p.header.frame_id = "base_footprint";
+  p.header.frame_id = "world";
   p.pose.position.x = 0.7;
   p.pose.position.y = 0.0;
   p.pose.position.z = 0.5;
@@ -102,8 +86,8 @@ void place(moveit::planning_interface::MoveGroupInterface &group)
 
   g.pre_place_approach.direction.vector.z = -1.0;
   g.post_place_retreat.direction.vector.x = -1.0;
-  g.post_place_retreat.direction.header.frame_id = "base_footprint";
-  g.pre_place_approach.direction.header.frame_id = "r_wrist_roll_link";
+  g.post_place_retreat.direction.header.frame_id = "world";
+  g.pre_place_approach.direction.header.frame_id = "ee_link";
   g.pre_place_approach.min_distance = 0.1;
   g.pre_place_approach.desired_distance = 0.2;
   g.post_place_retreat.min_distance = 0.1;
@@ -118,7 +102,7 @@ void place(moveit::planning_interface::MoveGroupInterface &group)
   moveit_msgs::Constraints constr;
   constr.orientation_constraints.resize(1);
   moveit_msgs::OrientationConstraint &ocm = constr.orientation_constraints[0];
-  ocm.link_name = "r_wrist_roll_link";
+  ocm.link_name = "ee_link";
   ocm.header.frame_id = p.header.frame_id;
   ocm.orientation.x = 0.0;
   ocm.orientation.y = 0.0;
@@ -131,12 +115,12 @@ void place(moveit::planning_interface::MoveGroupInterface &group)
   //  group.setPathConstraints(constr);
   group.setPlannerId("RRTConnectkConfigDefault");
 
-  group.place("part", loc);
+  group.place("object1", loc);
 }
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "right_arm_pick_place");
+  ros::init(argc, argv, "pick_and_place");
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
@@ -146,19 +130,15 @@ int main(int argc, char **argv)
 
   ros::WallDuration(1.0).sleep();
 
-  moveit::planning_interface::MoveGroupInterface group("right_arm");
+  moveit::planning_interface::MoveGroupInterface group("manipulator");
   group.setPlanningTime(45.0);
 
   moveit_msgs::CollisionObject co;
   co.header.stamp = ros::Time::now();
-  co.header.frame_id = "base_footprint";
-
-  // remove pole
-  co.id = "pole";
-  co.operation = moveit_msgs::CollisionObject::REMOVE;
-  pub_co.publish(co);
+  co.header.frame_id = "world";
 
   // add pole
+  co.id = "pole";
   co.operation = moveit_msgs::CollisionObject::ADD;
   co.primitives.resize(1);
   co.primitives[0].type = shape_msgs::SolidPrimitive::BOX;
@@ -173,12 +153,8 @@ int main(int argc, char **argv)
   co.primitive_poses[0].orientation.w = 1.0;
   pub_co.publish(co);
 
-  // remove table
-  co.id = "table";
-  co.operation = moveit_msgs::CollisionObject::REMOVE;
-  pub_co.publish(co);
-
   // add table
+  co.id = "table";
   co.operation = moveit_msgs::CollisionObject::ADD;
   co.primitives[0].dimensions[shape_msgs::SolidPrimitive::BOX_X] = 0.5;
   co.primitives[0].dimensions[shape_msgs::SolidPrimitive::BOX_Y] = 1.5;
@@ -189,13 +165,8 @@ int main(int argc, char **argv)
   pub_co.publish(co);
 
   co.id = "part";
-  co.operation = moveit_msgs::CollisionObject::REMOVE;
-  pub_co.publish(co);
-
   moveit_msgs::AttachedCollisionObject aco;
   aco.object = co;
-  pub_aco.publish(aco);
-
   co.operation = moveit_msgs::CollisionObject::ADD;
   co.primitives[0].dimensions[shape_msgs::SolidPrimitive::BOX_X] = 0.15;
   co.primitives[0].dimensions[shape_msgs::SolidPrimitive::BOX_Y] = 0.1;
