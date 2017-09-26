@@ -7,42 +7,41 @@
 #include <moveit_msgs/DisplayRobotState.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 
+using namespace std;
 
 int main(int argc, char **argv) {
+    if (argc < 5){
+        return 0;
+    }
     ros::init(argc, argv,"moveit_group_item");
     ros::AsyncSpinner spinner(1);
     spinner.start();
     ros::NodeHandle nodeHandle;
 
     ros::Publisher planning_scene_diff_publisher = nodeHandle.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
-  while (planning_scene_diff_publisher.getNumSubscribers() < 1)
-  {
-    ros::WallDuration sleep_t(0.5);
-    //sleep_t.sleep();
-  }
+    while (planning_scene_diff_publisher.getNumSubscribers() < 1)
+    {
+      ros::WallDuration sleep_t(0.5);
+    }
 
-  // Define the attached object message
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  // We will use this message to add or
-  // subtract the object from the world
-  // and to attach the object to the robot
+  
   moveit_msgs::AttachedCollisionObject attached_object;
   attached_object.link_name = "base_link";
-  /* The header must contain a valid TF frame*/
   attached_object.object.header.frame_id = "base_link";
-  /* The id of the object */
-  char temp[10];
-  sprintf(temp,"box%s",argv[1]);
+  char *temp;
+  temp = (char *)malloc(sizeof(argv[1])+1);
+  sprintf(temp,"%s",argv[1]);
+  temp[sizeof(argv[1])] = '\0';
   attached_object.object.id = temp;
-  /* A default pose */
+
+  /* Set pose */
   geometry_msgs::Pose pose;
   pose.orientation.w = 1.0;
-  pose.position.x = atof(argv[2]);
-  pose.position.y = atof(argv[3]);
-  pose.position.z = atof(argv[4]);
+  pose.position.x = atof(argv[2])*0.01;
+  pose.position.y = atof(argv[3])*0.01;
+  pose.position.z = atof(argv[4])*0.01;
 
-
-  /* Define a box to be attached */
+  /* Define box size */
   float d1 = 0.2;
   float d2 = 0.2;
   float d3 = 0.1;
@@ -52,7 +51,7 @@ int main(int argc, char **argv) {
   	d3 = atof(argv[7]);
   }
   shape_msgs::SolidPrimitive primitive;
-  primitive.type = primitive.BOX;
+  primitive.type = primitive.BOX;       //We create a box if you want something else just change this line
   primitive.dimensions.resize(3);
   primitive.dimensions[0] = d1;
   primitive.dimensions[1] = d2;
@@ -63,20 +62,13 @@ int main(int argc, char **argv) {
 
   // Note that attaching an object to the robot requires
   // the corresponding operation to be specified as an ADD operation
-  attached_object.object.operation = attached_object.object.ADD;
+  attached_object.object.operation = attached_object.object.ADD;      //Type: Add new object
 
-  // Add an object into the environment
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  // Add the object into the environment by adding it to
-  // the set of collision objects in the "world" part of the
-  // planning scene. Note that we are using only the "object"
-  // field of the attached_object message here.
-  ROS_INFO("Adding the object into the world at the location of the right wrist.");
   moveit_msgs::PlanningScene planning_scene;
-  planning_scene.world.collision_objects.push_back(attached_object.object);
+  planning_scene.world.collision_objects.push_back(attached_object.object); //Add the new object in the planning scene
   planning_scene.is_diff = true;
-  planning_scene_diff_publisher.publish(planning_scene);
+  planning_scene_diff_publisher.publish(planning_scene);                    //Publish the new scene
   usleep(1000);
-    
+  free(temp);
   return 0;
 }

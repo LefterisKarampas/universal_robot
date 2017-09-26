@@ -18,12 +18,16 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    //cout << argv[0] << endl;
+	if(argc < 2){
+		ROS_ERROR("No point to compute Cartesian Path");
+		exit(1);
+	}
     ros::init(argc, argv,"moveit_group_goal");
     ros::AsyncSpinner spinner(1);
     spinner.start();
     ros::NodeHandle nodeHandle;
 
+    /*Set planning parameters*/
     moveit::planning_interface::MoveGroup group("manipulator");
     moveit_msgs::ExecuteKnownTrajectory srv;
     moveit::planning_interface::MoveGroup::Plan plan;
@@ -39,6 +43,7 @@ int main(int argc, char **argv) {
   
 	std::vector<geometry_msgs::Pose> waypoints;
 	geometry_msgs::Pose target_pose;
+	/*Create the vector with waypoints */
 	for(int i=1;i<argc;i+=3){
 		geometry_msgs::Pose target_pose;
 		target_pose.position.x = atof(argv[i]);
@@ -46,14 +51,13 @@ int main(int argc, char **argv) {
 		target_pose.position.z = atof(argv[i+2]);
 		waypoints.push_back(target_pose);
 	}
-	//waypoints.push_back(target_pose2);
   	double fraction = group.computeCartesianPath(waypoints,
                                                                                    0.001, // eef_step
                                                                                    0.0, // jump_threshold
                                                                                    srv.request.trajectory, true);
 
 	robot_trajectory::RobotTrajectory rt (group.getCurrentState()->getRobotModel(), "manipulator");
-	rt.setRobotTrajectoryMsg(*group.getCurrentState(), srv.request.trajectory);
+	rt.setRobotTrajectoryMsg(*group.getCurrentState(), srv.request.trajectory);	
 
 	// create a IterativeParabolicTimeParameterization object
 	trajectory_processing::IterativeParabolicTimeParameterization iptp;

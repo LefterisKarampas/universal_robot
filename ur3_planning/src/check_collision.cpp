@@ -14,7 +14,7 @@ bool userCallback(const robot_state::RobotState& kinematic_state, bool verbose)
 }
 
 int main(int argc,char **argv){
-	ros::init(argc, argv, "right_arm_kinematics");
+	ros::init(argc, argv, "arm_kinematics");
   	ros::AsyncSpinner spinner(1);
 	spinner.start();
 

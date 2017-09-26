@@ -18,14 +18,9 @@ int main(int argc, char **argv) {
   while (planning_scene_diff_publisher.getNumSubscribers() < 1)
   {
     ros::WallDuration sleep_t(0.5);
-    //sleep_t.sleep();
   }
 
-  // Define the attached object message
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  // We will use this message to add or
-  // subtract the object from the world
-  // and to attach the object to the robot
+ 
   moveit_msgs::AttachedCollisionObject attached_object;
   attached_object.link_name = "base_link";
   /* The header must contain a valid TF frame*/
@@ -51,7 +46,6 @@ int main(int argc, char **argv) {
   attached_object.object.primitives.push_back(primitive);
   attached_object.object.primitive_poses.push_back(pose);
 
-  // Note that attaching an object to the robot requires
   // the corresponding operation to be specified as an ADD operation
   attached_object.object.operation = attached_object.object.ADD;
 

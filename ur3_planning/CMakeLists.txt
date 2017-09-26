@@ -50,18 +50,11 @@ target_link_libraries(remove_object ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(check_collision src/check_collision.cpp)
 target_link_libraries(check_collision ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(move_position_goal src/move_position_goal.cpp)
-target_link_libraries(move_position_goal ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
 add_executable(get_info src/get_info.cpp)
 target_link_libraries(get_info ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(test_pipeline src/test_pipeline.cpp)
-target_link_libraries(test_pipeline ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
 add_executable(create_floor src/create_floor.cpp)
 target_link_libraries(create_floor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
 
 add_executable(CartesianPath src/CartesianPath.cpp)
 target_link_libraries(CartesianPath ${Boost_LIBRARIES} ${catkin_LIBRARIES})
@@ -75,19 +68,10 @@ target_link_libraries(stomp_move_goal ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(place src/place.cpp)
 target_link_libraries(place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(stop src/stop_move.cpp)
-target_link_libraries(stop ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(move_and_grasp src/move_and_grasp.cpp)
+target_link_libraries(move_and_grasp ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(demo_pick_place src/demo_pick_place.cpp)
-target_link_libraries(demo_pick_place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
-add_executable(NewCartesianPath src/NewCartesianPath.cpp)
-target_link_libraries(NewCartesianPath ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
-add_executable(pick_and_place src/pick_and_place.cpp)
-target_link_libraries(pick_and_place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
-add_executable(demo src/demo.cpp)
-target_link_libraries(demo ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(gripper_move src/gripper_move.cpp)
+target_link_libraries(gripper_move ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall" )

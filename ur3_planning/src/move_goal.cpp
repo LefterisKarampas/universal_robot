@@ -14,15 +14,7 @@
 
 
 using namespace std;
-
-/*bool userCallback(const robot_state::RobotState& kinematic_state, bool verbose)
-{
-  const double* joint_values = kinematic_state.getJointPositions("wrist_3_joint");
-  return (joint_values[0] > 0.0);
-}*/
-
 int main(int argc, char **argv) {
-    //cout << argv[0] << endl;
     if(argc <= 3){
         ROS_ERROR("FAILED waiting 3+ positions for args");
         exit(1);
@@ -31,9 +23,9 @@ int main(int argc, char **argv) {
     ros::AsyncSpinner spinner(1);
     spinner.start();
     ros::NodeHandle nodeHandle;
-
-    moveit::planning_interface::MoveGroup group("manipulator");
-    group.setMaxVelocityScalingFactor(0.1);
+    /*Set planning parameters*/
+    moveit::planning_interface::MoveGroup group("manipulator"); 
+    group.setMaxVelocityScalingFactor(0.1);	
     group.setMaxAccelerationScalingFactor(0.1);
     group.setPlanningTime(10.0);
     group.setNumPlanningAttempts(100);
@@ -45,36 +37,37 @@ int main(int argc, char **argv) {
     group.setStartStateToCurrentState();
 
     robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
-    //robot_model::RobotModelPtr kinematic_model = robot_model_loader.getModel();
-    //planning_scene::PlanningScene planning_scene(kinematic_model);
-    //planning_scene.setStateFeasibilityPredicate(userCallback);
 
-    robot_state::RobotState start_state(*group.getCurrentState());
+    robot_state::RobotState start_state(*group.getCurrentState());										//Set start state for the planning
     robot_model::RobotModelPtr robot_model_ptr = robot_model_loader.getModel();
     const robot_state::JointModelGroup* joint_model_group = robot_model_ptr->getJointModelGroup("manipulator");
 
-    ROS_INFO("End effector reference frame: %s", group.getEndEffectorLink().c_str());
     geometry_msgs::PoseStamped target_pose;
     target_pose.header.frame_id="world";
     target_pose.header.stamp=ros::Time::now()+ros::Duration(10.0);
-    //ROS_ERROR("%s-%f %s-%f %s-%f",argv[1],atof(argv[1]),argv[2],atof(argv[2]),argv[3],atof(argv[3]));
-    target_pose.pose.position.x = atof(argv[1]);
-    target_pose.pose.position.y = atof(argv[2]);
-    target_pose.pose.position.z = atof(argv[3]);
 
-    //target_pose.pose.orientation.w = 1.0;
+    /*Set planning position */
+    target_pose.pose.position.x = atof(argv[1])*0.01;
+    target_pose.pose.position.y = atof(argv[2])*0.01;
+    target_pose.pose.position.z = atof(argv[3])*0.01;
+
+    /*Set position for checking validity for goal state with IK Solver*/
     geometry_msgs::Pose target_pose1;
     target_pose1.position.x = target_pose.pose.position.x;
     target_pose1.position.y = target_pose.pose.position.y;
     target_pose1.position.z = target_pose.pose.position.z;
+
+    /*Set the orientation */
     if(argc > 4){
         target_pose1.orientation = tf::createQuaternionMsgFromRollPitchYaw(atof(argv[4]),atof(argv[5]),atof(argv[6]));
-        target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(atof(argv[4]),atof(argv[5]),atof(argv[6])); //horizontal
+        target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(atof(argv[4]),atof(argv[5]),atof(argv[6])); 
     }
     else{
         target_pose1.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI,0.0,0.0);
         target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI,0.0,0.0); //horizontal
     }
+
+    /*Check if the goal state is valid */
     bool found_ik = start_state.setFromIK(joint_model_group, target_pose1);
     if(!found_ik){
         ROS_ERROR("Invalid end point!");
@@ -82,6 +75,8 @@ int main(int argc, char **argv) {
     }
     
     moveit_msgs::Constraints constraint;
+    /*We can insert joint constraints in planning*/
+
     /*moveit_msgs::JointConstraint joint_constraints;
     joint_constraints.joint_name = "elbow_joint";
     joint_constraints.position = 1.2;
@@ -89,18 +84,13 @@ int main(int argc, char **argv) {
     joint_constraints.tolerance_below = 1.5;
     joint_constraints.weight = 1.0;
     constraint.joint_constraints.push_back(joint_constraints);*/
-    //constraint 
-    
-    //bool state_feasible = planning_scene.isStateFeasible(start_state);
-    //ROS_INFO_STREAM("State is " << (state_feasible ? "feasible" : "not feasible"));
 
-    //bool state_valid = planning_scene.isStateValid(start_state, kinematic_constraint_set, "manipulator");
-    //ROS_INFO_STREAM("Test 10: Random state is " << (state_valid ? "valid" : "not valid"));
+    group.setPoseTarget(target_pose);			//Set goal pose
+    group.setPathConstraints(constraint);		//Set constraints
 
-    group.setPoseTarget(target_pose);
-    group.setPathConstraints(constraint);
-    moveit::planning_interface::MoveGroup::Plan my_plan;
-    bool success = group.plan(my_plan);
+
+    moveit::planning_interface::MoveGroup::Plan my_plan;	//Create plan object
+    bool success = group.plan(my_plan);						//if success == true -> my_plan contains the planning from start state to goal state
     ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
     if(success) {
         char q;
