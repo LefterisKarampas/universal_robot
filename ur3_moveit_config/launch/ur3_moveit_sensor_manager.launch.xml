@@ -1,3 +1,11 @@
 <launch>
 
+<arg name="astra" default="false"/>
+
+<group if="$(arg astra)">
+<rosparam command="load" file="$(find ur3_moveit_config)/config/sensors_astra.yaml" />
+
+</group>
+
+
 </launch>

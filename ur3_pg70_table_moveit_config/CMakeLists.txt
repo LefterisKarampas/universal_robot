@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ur3_pg70_mix_moveit_config)
+project(ur3_pg70_table_moveit_config)
 
 find_package(catkin REQUIRED)
 

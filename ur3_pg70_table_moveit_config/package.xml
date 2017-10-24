@@ -1,6 +1,6 @@
 <package>
 
-  <name>ur3_pg70_mix_moveit_config</name>
+  <name>ur3_pg70_table_moveit_config</name>
   <version>0.3.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the ur3_pg70 with the MoveIt! Motion Planning Framework
