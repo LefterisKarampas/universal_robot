@@ -118,24 +118,15 @@
     <origin xyz="0.004 -0.08 0.03" rpy="0.0 0.0 ${pi/2}" />
  </joint>
 
- <!--<link name="gripper_power_cable">
-    <visual>
-      <geometry>
-        <cylinder length="0.025" radius="0.0075"/>
-         <material
-        name="">
-        <color
-          rgba="0.549019608 0.450980392 0.235294118 1" />
-      </material>
-      </geometry>
-    </visual>
+ <joint name="ar_marker_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="ar_marker_link"/>
+    <origin xyz="-0.392 0.412 0.00" rpy="0.0 0.0 0.0" />
+ </joint>
+
+ <link name="ar_marker_link">
   </link>
 
-  <joint name="gripper_power_cable_joint" type="fixed">
-    <parent link="gripper_power_box"/>
-    <child link="gripper_power_cable"/>
-    <origin xyz="0.0 0.0 -0.05" rpy="0.0 0.0 0.0" />
- </joint>-->
 
   <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
