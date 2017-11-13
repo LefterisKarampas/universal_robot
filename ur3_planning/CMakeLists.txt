@@ -30,6 +30,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost 1.40 COMPONENTS program_options REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED)
 
 catkin_package(
     LIBRARIES ${PROJECT_NAME}
@@ -73,5 +74,18 @@ target_link_libraries(move_and_grasp ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(gripper_move src/gripper_move.cpp)
 target_link_libraries(gripper_move ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+
+add_executable(move_to_tf src/move_to_tf.cpp)
+target_link_libraries(move_to_tf ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
+add_executable(add_object_from_tf src/add_object_from_tf.cpp)
+target_link_libraries(add_object_from_tf ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
+
+add_executable(demo_pick_place src/demo_pick_place.cpp)
+target_link_libraries(demo_pick_place ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
+add_executable(move_grasp src/move_grasp.cpp)
+target_link_libraries(move_grasp ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
 
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall" )

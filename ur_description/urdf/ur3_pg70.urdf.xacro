@@ -75,7 +75,7 @@
  <link name="gripper_power_cable">
     <visual>
       <geometry>
-        <cylinder length="0.03" radius="0.0075"/>
+        <cylinder length="0.035" radius="0.012"/>
       </geometry>
       <material name="o">
          <color rgba="0.549019608 0.450980392 0.235294118 1" />
@@ -88,21 +88,21 @@
     </inertial>
     <collision>
       <geometry>
-        <cylinder length="0.03" radius="0.0075"/>
+        <cylinder length="0.035" radius="0.012"/>
       </geometry>
     </collision>
  </link>
 
  <joint name="gripper_power_cable_joint" type="fixed">
-    <parent link="schunk_pg70_base_link"/>
+    <parent link="gripper_power_box"/>
     <child link="gripper_power_cable"/>
-    <origin xyz="-0.035 -0.082 0.02" rpy="0.0 ${pi/2} 0.0" />
+    <origin xyz="-0.01 -0.042 -0.011" rpy="${pi/2} 0.0 0.0" />
  </joint>
 
   <link name="gripper_power_box">
     <visual>
       <geometry>
-        <box size="0.047 0.068 0.07"/>
+        <box size="0.047 0.072 0.072"/>
          <material
         name="">
         <color
@@ -121,7 +121,7 @@
  <joint name="ar_marker_joint" type="fixed">
     <parent link="base_link"/>
     <child link="ar_marker_link"/>
-    <origin xyz="-0.392 0.412 0.00" rpy="0.0 0.0 0.0" />
+    <origin xyz="-0.41 0.41 0.00" rpy="0.0 0.0 0.0" />
  </joint>
 
  <link name="ar_marker_link">

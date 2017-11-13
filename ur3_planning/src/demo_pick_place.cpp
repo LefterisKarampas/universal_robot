@@ -9,9 +9,75 @@
 #include <moveit_msgs/DisplayRobotState.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 #include <moveit_msgs/Constraints.h>
-
+#include <schunk_pg70/set_position.h>
 
 using namespace std;
+
+static int k = 1;
+static std::string var;
+
+void pick(moveit::planning_interface::MoveGroup &group,geometry_msgs::PoseStamped &p)
+{
+  std::vector<moveit_msgs::Grasp> grasps;
+
+  p.header.frame_id = "ee_link";
+  moveit_msgs::Grasp g;
+  g.grasp_pose = p;
+
+  g.pre_grasp_approach.direction.vector.x = 1.0;
+  g.pre_grasp_approach.direction.header.frame_id = "ee_link";
+  g.pre_grasp_approach.min_distance = 0.2;
+  g.pre_grasp_approach.desired_distance = 0.4;
+
+
+  grasps.push_back(g);
+  group.pick("coke", grasps);
+}
+
+
+int open_gripper(){
+    ros::NodeHandle n;
+    ros::ServiceClient client = n.serviceClient<schunk_pg70::set_position>("schunk_pg70/set_position");
+    schunk_pg70::set_position srv;
+    double pos = 60;
+    srv.request.goal_position = pos;
+    double vel = 60;
+    srv.request.goal_velocity = vel;
+    srv.request.goal_acceleration = 250;  
+    if (client.call(srv))
+    {
+        ROS_INFO("schunk_pg70 is moving to goal position!");
+    }
+    else
+    {
+        ROS_ERROR("Failed to call service for pg70 moving");
+        return 1;
+    }
+    sleep(3);
+    return 0;
+}
+
+int close_gripper(){
+    ros::NodeHandle n;
+    ros::ServiceClient client = n.serviceClient<schunk_pg70::set_position>("schunk_pg70/set_position");
+    schunk_pg70::set_position srv;
+    double pos = 10;
+    srv.request.goal_position = pos;
+    double vel = 60;
+    srv.request.goal_velocity = vel;
+    srv.request.goal_acceleration = 250;  
+    if (client.call(srv))
+    {
+        ROS_INFO("schunk_pg70 is moving to goal position!");
+    }
+    else
+    {
+        ROS_ERROR("Failed to call service for pg70 moving");
+        return 1;
+    }
+    sleep(3);
+    return 0;
+}
 
 int main(int argc, char **argv) {
     //cout << argv[0] << endl;
@@ -27,7 +93,7 @@ int main(int argc, char **argv) {
     group.setNumPlanningAttempts(100);
     group.setPlannerId("RRTConnectkConfigDefault");
     group.setPoseReferenceFrame("world");
-	group.setGoalTolerance(0.1);
+	group.setGoalTolerance(0.001);
 
     group.setStartStateToCurrentState();
 
@@ -42,104 +108,87 @@ int main(int argc, char **argv) {
     moveit::planning_interface::PlanningSceneInterface plan_scene;
     std::map<std::string,geometry_msgs::Pose> mymap;
     std::vector<std::string> obj;
-    obj.push_back("box1");  
+    obj.push_back("coke1");  
     mymap = plan_scene.getObjectPoses(obj);
-    auto search = mymap.find("box1");
+    auto search = mymap.find("coke1");
     if(search != mymap.end()) {
-        target_pose.pose.position.x = search->second.position.x - 0.1;
-	    target_pose.pose.position.y = search->second.position.y;
-	    target_pose.pose.position.z = search->second.position.z;
-        std::cout << search->second.position.z << endl;
+        target_pose.pose.position.x = search->second.position.x + 0.0325;
+	    target_pose.pose.position.y = search->second.position.y + 0.0325;
+	    target_pose.pose.position.z = search->second.position.z + 0.3;
+        ROS_INFO("Object position: %lf %lf %lf",search->second.position.x,search->second.position.y,search->second.position.z);
     }
     else {
-        target_pose.pose.position.x = 0.4;
-	    target_pose.pose.position.y = 0.4;
-	    target_pose.pose.position.z = 0.2;
+        ROS_ERROR("Not found coke");
+        exit(1);
     }
     //ROS_ERROR("%s-%f %s-%f %s-%f",argv[1],atof(argv[1]),argv[2],atof(argv[2]),argv[3],atof(argv[3]));
-    target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI,0.0,0.0); //horizontal
+    target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(-M_PI/2,M_PI/2,0); //horizontal
     //target_pose.pose.orientation.x = 0.5;
     
     //moveit_msgs::Constraints constraint;
     //constraint 
-
+    //open_gripper();
+    sleep(2);
     group.setPoseTarget(target_pose);
     //group.setPathConstraints(constraint);
+    bool goal_reached = false;
+    int loop = 0;
+    bool success = false;
     moveit::planning_interface::MoveGroup::Plan my_plan;
-    bool success = group.plan(my_plan);
-    ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
-    if(success) {
-        char q;
-        std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
-        std::cout << "Continue? y/n: ";
-        std::cin >> q;
-        std::cout << endl;
-        if(q == 'y'){
-           ROS_INFO("Moving...");
-            //group.stop();
-            group.execute(my_plan);
+   while(ros::ok() && !goal_reached && loop < 10){
+        success = group.plan(my_plan);
+        ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
+        if(success) {
+            char q;
+            std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
+            std::cout << "Continue? y/n: ";
+            std::cin >> q;
+            std::cout << endl;
+            if(q == 'y'){
+               ROS_INFO("Moving...");
+                //group.stop();
+                group.execute(my_plan);
+                goal_reached = true;
+            }
         }
+        loop++;
     }
-    else{
-    	ROS_ERROR("Not found path!");
-    	return 1;
-    } 
+    if(loop == 10){
+        ROS_ERROR("Fail found a plan");
+        exit(1);
+    }
     sleep(5);
 
-    move_group.pick("box1");
-    move_group.attachObject("box1");
+    //close_gripper();
+    move_group.attachObject("coke1");
     sleep(3);
 
-    target_pose.pose.position.x = 0.6;
-    target_pose.pose.position.y = 0.1;
-    target_pose.pose.position.z = 0.1;
+    goal_reached = false;
+    loop = 0;
+    target_pose.pose.position.x = 0.2;
+    target_pose.pose.position.y = 0.2;
+    target_pose.pose.position.z = 1.2;
+    //move_group.place("coke",target_pose);
+    move_group.detachObject("coke1");
     group.setPoseTarget(target_pose);
-    success = group.plan(my_plan);
-    ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
-    if(success) {
-        char q;
-        std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
-        std::cout << "Continue? y/n: ";
-        std::cin >> q;
-        std::cout << endl;
-        if(q == 'y'){
-           ROS_INFO("Moving...");
-            //group.stop();
-            group.execute(my_plan);
+    while(ros::ok() && !goal_reached && loop < 10){
+        success = group.plan(my_plan);
+        ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
+        if(success) {
+            char q;
+            std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
+            std::cout << "Continue? y/n: ";
+            std::cin >> q;
+            std::cout << endl;
+            if(q == 'y'){
+               ROS_INFO("Moving...");
+                //group.stop();
+                group.execute(my_plan);
+                goal_reached = true;
+            }
         }
+        loop++;
     }
-    else{
-    	ROS_ERROR("Not found path!");
-    	return 1;
-    } 
-    sleep(5);
-    geometry_msgs::PoseStamped place_pose;
-    place_pose.pose.position.x = 0.4;
-    place_pose.pose.position.y = 0.4;
-    place_pose.pose.position.z = 0.2;
-    move_group.place("box1",place_pose);
-    move_group.detachObject("box1");
-    sleep(5);
-
-    group.setPositionTarget(0.6,0.1,0.1);
-    success = group.plan(my_plan);
-    ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
-    if(success) {
-        char q;
-        std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
-        std::cout << "Continue? y/n: ";
-        std::cin >> q;
-        std::cout << endl;
-        if(q == 'y'){
-           ROS_INFO("Moving...");
-            //group.stop();
-            group.execute(my_plan);
-        }
-    }
-    else{
-    	ROS_ERROR("Not found path!");
-    	return 1;
-    } 
-    sleep(5);
+    //move_group.detachObject("coke1");
     return 0;
 }

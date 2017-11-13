@@ -27,11 +27,11 @@ int main(int argc, char **argv) {
     moveit::planning_interface::MoveGroup group("manipulator"); 
     group.setMaxVelocityScalingFactor(0.1);	
     group.setMaxAccelerationScalingFactor(0.1);
-    group.setPlanningTime(10.0);
+    group.setPlanningTime(5.0);
     group.setNumPlanningAttempts(100);
     //group.allowReplanning(true);
     group.setPlannerId("RRTConnectkConfigDefault");
-    group.setPoseReferenceFrame("world");
+    group.setPoseReferenceFrame("/world");
 	group.setGoalTolerance(0.001);
 
     group.setStartStateToCurrentState();
@@ -90,20 +90,26 @@ int main(int argc, char **argv) {
 
 
     moveit::planning_interface::MoveGroup::Plan my_plan;	//Create plan object
-    bool success = group.plan(my_plan);						//if success == true -> my_plan contains the planning from start state to goal state
-    ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
-    if(success) {
-        char q;
-        std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
-        std::cout << "Continue? y/n: ";
-        std::cin >> q;
-        std::cout << std::endl;
-        if(q == 'y'){
-           ROS_INFO("Moving...");
-            //group.stop();
-            group.asyncExecute(my_plan);
+    bool goal_reached = false;
+    int loop = 0;
+    while(ros::ok() && !goal_reached && loop < 5){
+        bool success = group.plan(my_plan);						//if success == true -> my_plan contains the planning from start state to goal state
+        ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
+        if(success) {
+            char q;
+            std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
+            std::cout << "Continue? y/n: ";
+            std::cin >> q;
+            std::cout << std::endl;
+            if(q == 'y'){
+               ROS_INFO("Moving...");
+                //group.stop();
+                group.asyncExecute(my_plan);
+                goal_reached = true;
+            }
         }
-    } 
+        loop++;
+   } 
     sleep(5);
     return 0;
 }

@@ -56,6 +56,7 @@
     <disable_collisions link1="ee_link" link2="gripper_power_cable" reason="Never" />
     <disable_collisions link1="ee_link" link2="schunk_pg70_base_link" reason="Never" />
     <disable_collisions link1="ee_link" link2="schunk_pg70_finger_left_link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="schunk_pg70_finger_right_link" reason="Never" />
     <disable_collisions link1="ee_link" link2="schunk_pg70_fingertip_left_link" reason="Never" />
     <disable_collisions link1="ee_link" link2="schunk_pg70_fingertip_right_link" reason="Never" />
     <disable_collisions link1="ee_link" link2="wrist_1_link" reason="Never" />
@@ -74,7 +75,7 @@
     <disable_collisions link1="gripper_link" link2="wrist_1_link" reason="Never" />
     <disable_collisions link1="gripper_link" link2="wrist_2_link" reason="Never" />
     <disable_collisions link1="gripper_link" link2="wrist_3_link" reason="Default" />
-    <disable_collisions link1="gripper_power_box" link2="gripper_power_cable" reason="Default" />
+    <disable_collisions link1="gripper_power_box" link2="gripper_power_cable" reason="Adjacent" />
     <disable_collisions link1="gripper_power_box" link2="schunk_pg70_base_link" reason="Adjacent" />
     <disable_collisions link1="gripper_power_box" link2="schunk_pg70_finger_left_link" reason="Never" />
     <disable_collisions link1="gripper_power_box" link2="schunk_pg70_finger_right_link" reason="Never" />
@@ -83,7 +84,7 @@
     <disable_collisions link1="gripper_power_box" link2="wrist_1_link" reason="Never" />
     <disable_collisions link1="gripper_power_box" link2="wrist_2_link" reason="Never" />
     <disable_collisions link1="gripper_power_box" link2="wrist_3_link" reason="Never" />
-    <disable_collisions link1="gripper_power_cable" link2="schunk_pg70_base_link" reason="Adjacent" />
+    <disable_collisions link1="gripper_power_cable" link2="schunk_pg70_base_link" reason="Never" />
     <disable_collisions link1="gripper_power_cable" link2="schunk_pg70_finger_left_link" reason="Never" />
     <disable_collisions link1="gripper_power_cable" link2="schunk_pg70_finger_right_link" reason="Never" />
     <disable_collisions link1="gripper_power_cable" link2="schunk_pg70_fingertip_left_link" reason="Never" />
