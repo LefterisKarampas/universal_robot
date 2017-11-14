@@ -1,3 +1,5 @@
 <launch>
 
+<rosparam command="load" file="$(find ur3_pg70_table_moveit_config)/config/sensors.yaml" />
+
 </launch>

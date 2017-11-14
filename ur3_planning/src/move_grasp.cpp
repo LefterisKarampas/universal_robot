@@ -25,7 +25,9 @@ using namespace std;
 string object_name = "grasp_object";
 
 void add_object(string name,geometry_msgs::Pose pose){
-    moveit::planning_interface::PlanningSceneInterface current_scene;
+    ros::NodeHandle node_handle;
+    ros::Publisher planning_scene_diff_publisher = node_handle.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+    moveit_msgs::PlanningScene planning_scene;
     sleep(2.0);
     moveit_msgs::CollisionObject co;
     shapes::Mesh* m = shapes::createMeshFromResource("file:///home/lkarampas/coke.stl");
@@ -33,21 +35,26 @@ void add_object(string name,geometry_msgs::Pose pose){
     shapes::ShapeMsg co_mesh_msg;
     shapes::constructMsgFromShape(m,co_mesh_msg);
     co_mesh = boost::get<shape_msgs::Mesh>(co_mesh_msg);
-
     co.meshes.resize(1);
     co.mesh_poses.resize(1);
     co.meshes[0] = co_mesh;
     co.header.frame_id = "world";
     co.id = name;  
+    pose.position.z = 0.86;
+    pose.orientation.x = 0;
+    pose.orientation.y = 0;
+    pose.orientation.z = 0;
+    pose.orientation.w = 1;
     co.mesh_poses[0] = pose;
     co.meshes.push_back(co_mesh);
     co.mesh_poses.push_back(co.mesh_poses[0]);
     co.operation = co.ADD;
-    std::vector<moveit_msgs::CollisionObject> vec;
-    vec.push_back(co);
+    planning_scene.world.collision_objects.push_back(co);
+    planning_scene.is_diff = true;
     ROS_INFO("%s added into the world",name.c_str());
-    current_scene.addCollisionObjects(vec);
-    sleep(5.0);
+    //planning_scene.addCollisionObjects(vec);
+    planning_scene_diff_publisher.publish(planning_scene);
+    sleep(2);
 }
 
 
@@ -105,9 +112,9 @@ int main(int argc,char * argv[]){
     moveit::planning_interface::MoveGroup group("manipulator"); 
     group.setMaxVelocityScalingFactor(0.1);	
     group.setMaxAccelerationScalingFactor(0.1);
-    group.setPlanningTime(10.0);
-    group.setNumPlanningAttempts(100);
-    //group.allowReplanning(true);
+    group.setPlanningTime(5.0);
+    group.setNumPlanningAttempts(50);
+    group.allowReplanning(true);
     group.setPlannerId("RRTConnectkConfigDefault");
     group.setPoseReferenceFrame("world");
 	group.setGoalTolerance(0.001);
@@ -163,10 +170,11 @@ int main(int argc,char * argv[]){
             ROS_ERROR("Invalid end point!");
             continue;
         }
-        add_object(object_name,target_pose1);
-        target_pose.pose.position.x -= 0.23;
-        target_pose.pose.position.y += 0.028;
-        //target_pose.pose.position.z += 0.4;
+        //add_object(object_name,target_pose1);
+        //sleep(5);
+        target_pose.pose.position.x -= 0.1;
+        target_pose.pose.position.y += 0.034;
+        //target_pose.pose.position.z += 0.1;
         group.setPoseTarget(target_pose);			//Set goal pose
 
         moveit::planning_interface::MoveGroup::Plan my_plan;	//Create plan object
