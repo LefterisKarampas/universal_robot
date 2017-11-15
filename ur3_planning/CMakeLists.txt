@@ -88,4 +88,7 @@ target_link_libraries(demo_pick_place ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${ca
 add_executable(move_grasp src/move_grasp.cpp)
 target_link_libraries(move_grasp ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(move_grasp_random src/move_grasp_random.cpp)
+target_link_libraries(move_grasp_random ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall" )

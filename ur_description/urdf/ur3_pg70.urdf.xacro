@@ -110,6 +110,11 @@
       </material>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+       <box size="0.047 0.072 0.072"/>
+      </geometry>
+    </collision>
   </link>
 
   <joint name="gripper_power_joint" type="fixed">

@@ -117,8 +117,7 @@ void add_object(string name,geometry_msgs::Pose pose){
     planning_scene.world.collision_objects.push_back(co);
     planning_scene.is_diff = true;
     ROS_INFO("%s added into the world",name.c_str());
-    for(int i=0;i<5;i++)
-    	planning_scene_diff_publisher.publish(planning_scene);
+    planning_scene_diff_publisher.publish(planning_scene);
 }
 
 
@@ -215,17 +214,17 @@ int main(int argc,char * argv[]){
         /*Set planning position */
         target_pose.pose.position.x = transform.getOrigin().x();
         target_pose.pose.position.y = transform.getOrigin().y();
-        target_pose.pose.position.z = 0.93;
+        target_pose.pose.position.z = transform.getOrigin().z();
         /*Set position for checking validity for goal state with IK Solver*/
         geometry_msgs::Pose target_pose1;
         target_pose1.position = target_pose.pose.position;
         
         //Set the orientation
        
-        target_pose1.orientation.x = 0;
-        target_pose1.orientation.y = 0;
-        target_pose1.orientation.z = 0;
-        target_pose1.orientation.w = 1;
+        target_pose1.orientation.x = transform.getRotation().x();
+        target_pose1.orientation.y = transform.getRotation().y();
+        target_pose1.orientation.z = transform.getRotation().z();
+        target_pose1.orientation.w = transform.getRotation().w();
         target_pose.pose.orientation = target_pose1.orientation;
 
         //open_gripper(); 
@@ -235,10 +234,11 @@ int main(int argc,char * argv[]){
             ROS_ERROR("Invalid end point!");
             continue;
         }
-        add_object(object_name,target_pose1);
-        sleep(5);
-        target_pose.pose.position.x -= 0.25;
-        target_pose.pose.position.y += 0.035;
+        //
+        //add_object(object_name,target_pose1);
+        //sleep(5);
+        //target_pose.pose.position.x -= 0.25;
+        //target_pose.pose.position.y += 0.035;
         //target_pose.pose.position.z = 1.0;
         group.setPoseTarget(target_pose);			//Set goal pose
 
@@ -266,7 +266,7 @@ int main(int argc,char * argv[]){
         sleep(10);
         //emove_object(object_name);
         //sleep(1);
-        std::vector<geometry_msgs::Pose> waypoints;
+        /*std::vector<geometry_msgs::Pose> waypoints;
         target_pose1.position = target_pose.pose.position;
         waypoints.push_back(target_pose1);
         target_pose1.position.x += 0.15;
@@ -282,10 +282,10 @@ int main(int argc,char * argv[]){
         sleep(1);
         Cartesian_Path(group,waypoints);
         sleep(2);
-
+        */
         target_pose.pose.position.x = 0.3;
         target_pose.pose.position.y = 0.3;
-        target_pose.pose.position.z = 0.93;
+        target_pose.pose.position.z = 0.96;
         target_pose.pose.orientation.x = 0;
         target_pose.pose.orientation.y = 0;
         target_pose.pose.orientation.z = 0;
@@ -315,9 +315,8 @@ int main(int argc,char * argv[]){
                 continue;
             }
         }
-        sleep(10);
+        sleep(5);
         open_gripper();
-        sleep(1);
         group.detachObject(object_name);
     }
 }
