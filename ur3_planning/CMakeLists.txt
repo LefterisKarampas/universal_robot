@@ -88,6 +88,10 @@ target_link_libraries(move_grasp ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_
 add_executable(move_grasp_up src/move_grasp_up.cpp)
 target_link_libraries(move_grasp_up ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(move_grasp_messages src/move_grasp_messages.cpp)
+target_link_libraries(move_grasp_messages ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
+
 add_executable(move_grasp_random src/move_grasp_random.cpp)
 target_link_libraries(move_grasp_random ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
 

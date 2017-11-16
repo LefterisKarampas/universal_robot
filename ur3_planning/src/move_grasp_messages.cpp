@@ -22,6 +22,8 @@
 #include <schunk_pg70/set_position.h>
 #include <cstdlib>
 #include <camera_test/coke.h> 
+#include <gpd/GraspConfigList.h>
+#include <gpd/GraspConfig.h>
 
 using namespace std;
 string object_name = "grasp_object";
@@ -170,11 +172,7 @@ int close_gripper(){
 }
 
 
-int main(int argc,char * argv[]){
-    ros::init(argc, argv,"move_grasp");
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-    ros::NodeHandle nodeHandle;
+void move_grasp(const gpd::GraspConfigList & Grasps){
     /*Set planning parameters*/
     moveit::planning_interface::MoveGroup group("manipulator"); 
     group.setMaxVelocityScalingFactor(0.5); 
@@ -193,7 +191,7 @@ int main(int argc,char * argv[]){
     robot_state::RobotState start_state(*group.getCurrentState());                                      //Set start state for the planning
     robot_model::RobotModelPtr robot_model_ptr = robot_model_loader.getModel();
     const robot_state::JointModelGroup* joint_model_group = robot_model_ptr->getJointModelGroup("manipulator");
-
+    //std::vector<gpd::GraspConfig> grasps(Grasps);
     while(ros::ok()){
     bool goal_reached = false;
     tf::TransformListener listener;
@@ -355,3 +353,13 @@ int main(int argc,char * argv[]){
     }
     }
 }
+
+int main (int argc, char** argv)
+{
+    // Initialize ROS
+    ros::init (argc, argv, "move_grasp");
+    ros::NodeHandle nh;
+    ros::Subscriber sub = nh.subscribe ("/detect_grasps/clustered_grasps", 1, move_grasp);
+    // Spin
+    ros::spin ();
+} 
