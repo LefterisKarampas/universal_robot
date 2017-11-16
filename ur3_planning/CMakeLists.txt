@@ -69,9 +69,6 @@ target_link_libraries(stomp_move_goal ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(place src/place.cpp)
 target_link_libraries(place ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(move_and_grasp src/move_and_grasp.cpp)
-target_link_libraries(move_and_grasp ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
 add_executable(gripper_move src/gripper_move.cpp)
 target_link_libraries(gripper_move ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
@@ -87,6 +84,9 @@ target_link_libraries(demo_pick_place ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${ca
 
 add_executable(move_grasp src/move_grasp.cpp)
 target_link_libraries(move_grasp ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
+
+add_executable(move_grasp_up src/move_grasp_up.cpp)
+target_link_libraries(move_grasp_up ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(move_grasp_random src/move_grasp_random.cpp)
 target_link_libraries(move_grasp_random ${Boost_LIBRARIES} ${Eigen_LIBRARIES} ${catkin_LIBRARIES})
