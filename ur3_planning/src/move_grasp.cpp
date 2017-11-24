@@ -118,9 +118,7 @@ void add_object(string name,geometry_msgs::Pose pose){
     planning_scene.is_diff = true;
     ROS_INFO("%s added into the world",name.c_str());
     for(int i=0;i<5;i++)
-        planning_scene_diff_publisher.publish(planning_scene);
-    sleep(1);
-
+      planning_scene_diff_publisher.publish(planning_scene);
 }
 
 
@@ -190,19 +188,19 @@ int main(int argc,char * argv[]){
 
     robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
 
-    robot_state::RobotState start_state(*group.getCurrentState());                                      //Set start state for the planning
+    robot_state::RobotState start_state(*group.getCurrentState());                    //Set start state for the planning
     robot_model::RobotModelPtr robot_model_ptr = robot_model_loader.getModel();
     const robot_state::JointModelGroup* joint_model_group = robot_model_ptr->getJointModelGroup("manipulator");
 
-    while(ros::ok()){
+
     bool goal_reached = false;
     tf::TransformListener listener;
     open_gripper();
     while(ros::ok()&& !goal_reached){
         tf::StampedTransform transform;
         try{
-            listener.waitForTransform("world","grasp",ros::Time(0),ros::Duration(3.0));
-            listener.lookupTransform("/world", "grasp",  
+            listener.waitForTransform("world","ar_marker_3",ros::Time(0),ros::Duration(3.0));
+            listener.lookupTransform("/world", "ar_marker_3",  
                                    ros::Time(0), transform);
         }
         catch (tf::TransformException ex){
@@ -218,13 +216,13 @@ int main(int argc,char * argv[]){
         /*Set planning position */
         target_pose.pose.position.x = transform.getOrigin().x();
         target_pose.pose.position.y = transform.getOrigin().y();
-        target_pose.pose.position.z = 0.93;
+        target_pose.pose.position.z = transform.getOrigin().z();
         /*Set position for checking validity for goal state with IK Solver*/
         geometry_msgs::Pose target_pose1;
         target_pose1.position = target_pose.pose.position;
         
         //Set the orientation
-       
+        //target_pose1.orientation = tf::createQuaternionMsgFromRollPitchYaw(0,M_PI/2,0);
         target_pose1.orientation.x = 0;
         target_pose1.orientation.y = 0;
         target_pose1.orientation.z = 0;
@@ -240,13 +238,17 @@ int main(int argc,char * argv[]){
         }
         add_object(object_name,target_pose1);
         sleep(5);
-        target_pose.pose.position.x -= 0.20;
-        target_pose.pose.position.y += 0.035;
-        //target_pose.pose.position.z = 1.0;
-        group.setPoseTarget(target_pose);           //Set goal pose
+        int factor;
+        target_pose.pose.position.x += -0.23;
+        target_pose.pose.position.z = 0.95;
+        cout << "---------------------" << endl;
+        cout << target_pose.pose.position.x << endl;
+        cout << target_pose.pose.position.y << endl;
+        cout << target_pose.pose.position.z << endl;
+        group.setPoseTarget(target_pose);     //Set goal pose
 
-        moveit::planning_interface::MoveGroup::Plan my_plan;    //Create plan object
-        bool success = group.plan(my_plan);                     //if success == true -> my_plan contains the planning from start state to goal state
+        moveit::planning_interface::MoveGroup::Plan my_plan;  //Create plan object
+        bool success = group.plan(my_plan);           //if success == true -> my_plan contains the planning from start state to goal state
         ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
         if(success) {
             char q;
@@ -267,61 +269,32 @@ int main(int argc,char * argv[]){
             continue;
         }
         sleep(10);
-        //emove_object(object_name);
+        remove_object(object_name);
         //sleep(1);
         std::vector<geometry_msgs::Pose> waypoints;
         target_pose1.position = target_pose.pose.position;
         remove_object(object_name);
         sleep(1);
         waypoints.push_back(target_pose1);
-        target_pose1.position.x += 0.10;
+        target_pose1.position.x += 0.08;
         waypoints.push_back(target_pose1);
-        int count = 0;
-        while(!Cartesian_Path(group,waypoints)){
-            count++;
-            if(count == 10){
-                bool recover = false;
-                do{
-                    success = group.plan(my_plan);                     //if success == true -> my_plan contains the planning from start state to goal state
-                    ROS_INFO("plan: %s",success?"SUCCESS":"FAILED");
-                    if(success) {
-                        char q;
-                        std::cout << "Please make sure that your robot can move freely between these poses before proceeding!\n";
-                        std::cout << "Continue? y/n: ";
-                        std::cin >> q;
-                        std::cout << std::endl;
-                        if(q == 'y'){
-                           ROS_INFO("Moving...");
-                            group.asyncExecute(my_plan);
-                            recover = true;
-                        }
-                        else{
-                            continue;
-                        }
-                    }
-                    else
-                        continue;
-                }while(!recover);
-            }
-        }
+        while(!Cartesian_Path(group,waypoints));
         sleep(5);
+        exit(1);
         waypoints.clear();
         target_pose1.position.z += 0.15;
-        waypoints.push_back(target_pose1);
+        //waypoints.push_back(target_pose1);
         close_gripper();
         sleep(2);
-        group.attachObject(object_name);
+        //group.attachObject(object_name);
         sleep(1);
         Cartesian_Path(group,waypoints);
         sleep(2);
 
-        target_pose.pose.position.x = 0.1327;
+        target_pose.pose.position.x = 0.2627;
         target_pose.pose.position.y = 0.2661;
-        target_pose.pose.position.z = 0.93;
-        target_pose.pose.orientation.x = 0;
-        target_pose.pose.orientation.y = 0;
-        target_pose.pose.orientation.z = 0;
-        target_pose.pose.orientation.w = 1;
+        target_pose.pose.position.z = 1.0945;
+        target_pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0,M_PI/2,0);
         group.setPoseTarget(target_pose);                   //Set goal pose
         success = false;
         bool g_r = false;
@@ -350,8 +323,6 @@ int main(int argc,char * argv[]){
         sleep(10);
         open_gripper();
         sleep(1);
-        group.detachObject(object_name);
-        remove_object(object_name);
-    }
+        //group.detachObject(object_name);
     }
 }

@@ -182,7 +182,7 @@ int main(int argc,char * argv[]){
     group.allowReplanning(true);
     group.setPlannerId("RRTConnectkConfigDefault");
     group.setPoseReferenceFrame("world");
-  group.setGoalTolerance(0.001);
+    group.setGoalTolerance(0.001);
 
     group.setStartStateToCurrentState();
 
@@ -199,8 +199,8 @@ int main(int argc,char * argv[]){
     while(ros::ok()&& !goal_reached){
         tf::StampedTransform transform;
         try{
-            listener.waitForTransform("world","grasp",ros::Time(0),ros::Duration(3.0));
-            listener.lookupTransform("/world", "grasp",  
+            listener.waitForTransform("world","ar_marker_3",ros::Time(0),ros::Duration(3.0));
+            listener.lookupTransform("/world", "ar_marker_3",  
                                    ros::Time(0), transform);
         }
         catch (tf::TransformException ex){
@@ -216,7 +216,7 @@ int main(int argc,char * argv[]){
         /*Set planning position */
         target_pose.pose.position.x = transform.getOrigin().x();
         target_pose.pose.position.y = transform.getOrigin().y();
-        target_pose.pose.position.z = 0.93;
+        target_pose.pose.position.z = transform.getOrigin().z();
         /*Set position for checking validity for goal state with IK Solver*/
         geometry_msgs::Pose target_pose1;
         target_pose1.position = target_pose.pose.position;
@@ -238,9 +238,20 @@ int main(int argc,char * argv[]){
         }
         add_object(object_name,target_pose1);
         sleep(5);
-        target_pose.pose.position.x -= 0.10;
-        target_pose.pose.position.y += 0.025;
+        int factor;
+        if(target_pose.pose.position.x > 0){
+            factor = -1;
+        }
+        else{
+            factor = 1;
+        }
+        target_pose.pose.position.x += factor *0.15;
+        //target_pose.pose.position.y += 0.002;
         target_pose.pose.position.z = 1.1;
+        cout << "---------------------" << endl;
+        cout << target_pose.pose.position.x << endl;
+        cout << target_pose.pose.position.y << endl;
+        cout << target_pose.pose.position.z << endl;
         group.setPoseTarget(target_pose);     //Set goal pose
 
         moveit::planning_interface::MoveGroup::Plan my_plan;  //Create plan object
@@ -265,20 +276,21 @@ int main(int argc,char * argv[]){
             continue;
         }
         sleep(10);
-        //emove_object(object_name);
+        remove_object(object_name);
         //sleep(1);
         std::vector<geometry_msgs::Pose> waypoints;
         target_pose1.position = target_pose.pose.position;
         remove_object(object_name);
         sleep(1);
         waypoints.push_back(target_pose1);
-        target_pose1.position.x += 0.155;
+        target_pose1.position.x += factor * -0.125;
         waypoints.push_back(target_pose1);
         while(!Cartesian_Path(group,waypoints));
         sleep(5);
+        exit(1);
         waypoints.clear();
-       // target_pose1.position.z += 0.15;
-        //waypoints.push_back(target_pose1);
+        target_pose1.position.z += 0.15;
+        waypoints.push_back(target_pose1);
         close_gripper();
         sleep(2);
         //group.attachObject(object_name);
